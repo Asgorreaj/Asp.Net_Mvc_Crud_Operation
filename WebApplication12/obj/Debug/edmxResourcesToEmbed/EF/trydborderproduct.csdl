@@ -1,0 +1,86 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Schema Namespace="trydborderModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+  <EntityType Name="category">
+    <Key>
+      <PropertyRef Name="category_id" />
+    </Key>
+    <Property Name="category_id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="category_name" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
+    <NavigationProperty Name="Products" Relationship="Self.FK_Products_categorys" FromRole="categorys" ToRole="Products" />
+    <NavigationProperty Name="Carts" Relationship="trydborderModel.FK_Carts_categorys" FromRole="category" ToRole="Cart" />
+  </EntityType>
+  <EntityType Name="Product">
+    <Key>
+      <PropertyRef Name="product_id" />
+    </Key>
+    <Property Name="product_id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="product_name" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
+    <Property Name="category_id" Type="Int32" Nullable="false" />
+    <Property Name="price" Type="Int32" Nullable="false" />
+    <NavigationProperty Name="category" Relationship="Self.FK_Products_categorys" FromRole="Products" ToRole="categorys" />
+    <NavigationProperty Name="Carts" Relationship="trydborderModel.FK_Carts_Products" FromRole="Product" ToRole="Cart" />
+  </EntityType>
+  <Association Name="FK_Products_categorys">
+    <End Role="categorys" Type="Self.category" Multiplicity="1" />
+    <End Role="Products" Type="Self.Product" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="categorys">
+        <PropertyRef Name="category_id" />
+      </Principal>
+      <Dependent Role="Products">
+        <PropertyRef Name="category_id" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <EntityContainer Name="trydborderEntities" annotation:LazyLoadingEnabled="true">
+    <EntitySet Name="categorys" EntityType="Self.category" />
+    <EntitySet Name="Products" EntityType="Self.Product" />
+    <AssociationSet Name="FK_Products_categorys" Association="Self.FK_Products_categorys">
+      <End Role="categorys" EntitySet="categorys" />
+      <End Role="Products" EntitySet="Products" />
+    </AssociationSet>
+    <EntitySet Name="Carts" EntityType="trydborderModel.Cart" />
+    <AssociationSet Name="FK_Carts_categorys" Association="trydborderModel.FK_Carts_categorys">
+      <End Role="category" EntitySet="categorys" />
+      <End Role="Cart" EntitySet="Carts" />
+    </AssociationSet>
+    <AssociationSet Name="FK_Carts_Products" Association="trydborderModel.FK_Carts_Products">
+      <End Role="Product" EntitySet="Products" />
+      <End Role="Cart" EntitySet="Carts" />
+    </AssociationSet>
+  </EntityContainer>
+  <EntityType Name="Cart">
+    <Key>
+      <PropertyRef Name="cart_id" />
+    </Key>
+    <Property Name="cart_id" Type="Int32" Nullable="false" />
+    <Property Name="Product_id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="category_id" Type="Int32" Nullable="false" />
+    <NavigationProperty Name="category" Relationship="trydborderModel.FK_Carts_categorys" FromRole="Cart" ToRole="category" />
+    <NavigationProperty Name="Product" Relationship="trydborderModel.FK_Carts_Products" FromRole="Cart" ToRole="Product" />
+  </EntityType>
+  <Association Name="FK_Carts_categorys">
+    <End Type="trydborderModel.category" Role="category" Multiplicity="1" />
+    <End Type="trydborderModel.Cart" Role="Cart" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="category">
+        <PropertyRef Name="category_id" />
+      </Principal>
+      <Dependent Role="Cart">
+        <PropertyRef Name="category_id" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_Carts_Products">
+    <End Type="trydborderModel.Product" Role="Product" Multiplicity="1" />
+    <End Type="trydborderModel.Cart" Role="Cart" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Product">
+        <PropertyRef Name="product_id" />
+      </Principal>
+      <Dependent Role="Cart">
+        <PropertyRef Name="Product_id" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+</Schema>
