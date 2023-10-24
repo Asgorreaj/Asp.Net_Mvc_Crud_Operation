@@ -1,7 +1,7 @@
 ﻿using Antlr.Runtime.Misc;
 using Microsoft.Ajax.Utilities;
 using System;
-using WebApplication12.Models;
+
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
@@ -106,6 +106,34 @@ namespace WebApplication12.Controllers
             }
         }
 
+        [HttpGet]
+        public ActionResult AddToCart(int? id)
+        {
+            var db  = new trydborderEntities();
+            var data = (from products in db.Products
+                        where products.product_id == id
+                        select products).SingleOrDefault();
+            if (data != null)
+            {
+                var cart = Session["key"] as List<Product>;
+                if (cart == null)
+                {
+                    cart = new List<Product>();
+                }
+                cart.Add(data);
+
+                Session["key"] = cart;
+            }
+            return RedirectToAction("showAllDetails");
+        }
+
+        [HttpGet]
+        public ActionResult showCart()
+        {
+            var cart = Session["key"];
+            return View(cart);
+        }
+        
        
 
 
